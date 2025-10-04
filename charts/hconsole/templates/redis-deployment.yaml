@@ -1,0 +1,34 @@
+---
+{{- if .Values.redis.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "hconsole.fullname" (dict "Release" .Release "component" "redis") }}
+  labels:
+    app: {{ include "hconsole.name" . }}-redis
+  
+spec:
+  replicas: {{ .Values.redis.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "hconsole.name" . }}-redis
+  template:
+    metadata:
+      labels:
+        app: {{ include "hconsole.name" . }}-redis
+    spec:
+      containers:
+        - name: redis
+          image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+          imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.redis.service.port }}
+          resources:
+            {{- toYaml .Values.redis.resources | nindent 12 }}
+          volumeMounts:
+            - name: redis-data
+              mountPath: /data
+      volumes:
+        - name: redis-data
+          emptyDir: {}   # PV 대신 임시 볼륨
+{{- end }}
