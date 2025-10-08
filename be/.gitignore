@@ -21,6 +21,7 @@ hs_err_pid*
 # Build directories
 /target/
 /build/
+.gradle/
 
 # IDE settings
 *.iml

@@ -7,15 +7,23 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import React, { useState } from "react";
 import {
+	colors,
 	Drawer,
 	List,
 	ListItem,
 	ListItemButton,
 	ListItemText,
 } from "@mui/material";
+import { useRouter } from "next/navigation"
+import ConnectionIndicator from "./ConnectionIndicator";
 
 export default function Header() {
 	const [open, setOpen] = useState(false);
+	const router = useRouter();
+
+	const handleClick = (endpoint: string) => {
+		router.push(endpoint);
+	};
 
 	return (
 		<>
@@ -38,6 +46,7 @@ export default function Header() {
 					</div>
 					<div className="flex items-center space-x-4">
 						{/* Add more header actions or user menu here */}
+						<ConnectionIndicator />
 					</div>
 				</Toolbar>
 			</AppBar>
@@ -50,7 +59,10 @@ export default function Header() {
 					paper: {
 						sx: {
 							top: "64px",
+							width: "220px",
 							height: "calc(100% - 64px)",
+							color: "#fff",
+							background: "#7f7f7f",
 						},
 					},
 				}}
@@ -58,17 +70,20 @@ export default function Header() {
 				<List>
 					<ListItem disablePadding>
 						<ListItemButton>
-							<ListItemText primary="Clusters" />
+							<ListItemText
+								primary="Clusters"
+								onClick={() => {handleClick("/clusters")}}
+							/>
 						</ListItemButton>
 					</ListItem>
 					<ListItem disablePadding>
 						<ListItemButton>
-							<ListItemText primary="Logs" />
+							<ListItemText primary="mypage" onClick={() => {handleClick("/mypage")}} />
 						</ListItemButton>
 					</ListItem>
 					<ListItem disablePadding>
 						<ListItemButton>
-							<ListItemText primary="Settings" />
+							<ListItemText primary="Settings" onClick={() => {handleClick("/settings")}} />
 						</ListItemButton>
 					</ListItem>
 				</List>
