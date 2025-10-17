@@ -1,0 +1,26 @@
+[project]
+name = "agent"
+version = "0.1.0"
+description = "h-console Python agent"
+requires-python = ">=3.10"
+dependencies = [
+    "requests",
+    "pydantic",
+    "grpcio",
+    "grpcio-tools",
+    "protobuf",
+    "redis",
+    "aiohttp",
+    "kubernetes",
+    "psutil",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agent"]
+
+[dependency-groups]
+dev = ["pytest", "ruff", "black"]

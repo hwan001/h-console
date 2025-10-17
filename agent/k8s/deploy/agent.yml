@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: h-console-agent
+  labels:
+    app: h-console-agent
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: h-console-agent
+  template:
+    metadata:
+      labels:
+        app: h-console-agent
+    spec:
+      containers:
+        - name: agent
+          image: ghcr.io/hwan/h-console-agent:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: ENV
+              value: "production"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: h-console-agent
+spec:
+  selector:
+    app: h-console-agent
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

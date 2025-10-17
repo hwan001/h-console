@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package hconsole;
+
+option java_multiple_files = true;
+option java_package = "io.h001.hconsole.grpc";
+option java_outer_classname = "MetricsProto";
+
+message Metric {
+  string node = 1;
+  double cpu = 2;
+  double mem = 3;
+  double timestamp = 4;
+}
+
+message Response {
+  bool success = 1;
+}
+
+service MetricsService {
+  rpc SendMetrics(Metric) returns (Response);
+}
+
+service MetricsStreamService {
+  rpc SendMetrics (stream Metric) returns (Response);
+}

@@ -23,3 +23,6 @@ hasura:
     endpoint: ${HASURA_ENDPOINT}
     admin-secret: ${HASURA_SECRET}
 
+grpc:
+  server:
+    port: 9090
