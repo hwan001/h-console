@@ -39,15 +39,13 @@ export default function ClusterDetailPage() {
 
 	return (
 		<Layout>
-			<Box className="p-6">
+			<Box className="p-6 w-full max-w-none">
 				<Typography variant="h4" fontWeight="bold" mb={4}>
 					{cluster.name}
 				</Typography>
 
-				{/* 클러스터 기본 정보 카드 */}
 				<ClusterInfo cluster={cluster} />
 
-				{/* 노드 테이블 */}
 				<Box mt={6}>
 					<Typography variant="h6" mb={2}>
 						Node Status
@@ -55,7 +53,6 @@ export default function ClusterDetailPage() {
 					<NodeTable nodes={cluster.nodes} />
 				</Box>
 
-				{/* 로그 */}
 				<Box mt={6}>
 					<Typography variant="h6" mb={2}>
 						Log Viewer

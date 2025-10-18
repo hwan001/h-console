@@ -1,14 +1,12 @@
-import Header from "@/app/_components/Header";
-import TestButton from "@/app/_components/TestButton";
+import Layout from "@/app/_components/Layout";
 
-const AdminPage = ({
-}) => {
+const AdminPage = () => {
     return (
+        <Layout>
         <main>
-            <Header />
             <h1>Admin page</h1>
-            <TestButton endpoint="/" content="돌아가기" />
         </main>
+        </Layout>
     );
 };
 

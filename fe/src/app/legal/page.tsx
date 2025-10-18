@@ -57,7 +57,7 @@ export default function LegalPage() {
 		<Layout>
 			<main>
 				{/* <Box className="max-w-3xl mx-auto p-8"> */}
-        <Box className="w-screen p-10">
+				<Box className="w-screen p-10">
 					<Typography variant="h4" fontWeight="bold" className="mb-6">
 						{doc === "terms" ? "Terms of Service" : "Privacy Policy"}
 					</Typography>
