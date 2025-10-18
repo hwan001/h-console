@@ -1,45 +1,56 @@
-"use client"
+"use client";
 import { useEffect } from "react";
-import Header from "../_components/Header";
-import TestButton from "../_components/TestButton";
-import ClusterCard from "./components/ClusterCard";
 
-import { Grid, CircularProgress, Typography } from "@mui/material";
-import { useClusterStore } from "@/app/_stores/ClusterStore"; // store import 경로 확인 필요!
+import { Grid, CircularProgress, Typography, Box } from "@mui/material";
+import { useClusterStore } from "@/app/_stores/ClusterStore";
+import ClusterGrid from "./components/ClusterGrid";
+import Layout from "@/app/_components/Layout";
 
 const ClustersPage = () => {
-	const { clusters, fetchClusters } = useClusterStore();
+	const { isLoading, clusters, fetchClusters } = useClusterStore();
 
 	useEffect(() => {
 		fetchClusters();
 	}, [fetchClusters]);
 
-	const isLoading = clusters.length === 0;
 	return (
-		<main>
-			<Header />
-			<h1>Clusters Page</h1>
-			{isLoading ? (
-				<Grid
-					container
-					justifyContent="center"
-					alignItems="center"
-					sx={{ py: 4 }}
-				>
-					<CircularProgress />
-					<Typography sx={{ ml: 2 }}>Loading clusters...</Typography>
-				</Grid>
-			) : (
-				<Grid container spacing={2}>
-					{clusters.map((cluster) => (
-						<Grid key={cluster.id}>
-							<ClusterCard cluster={cluster} />
-						</Grid>
-					))}
-				</Grid>
-			)}
-			<TestButton endpoint="/" content="돌아가기" />
-		</main>
+		<Layout>
+			<main className="p-3">
+				{/* 헤더 타이틀 */}
+				<Box display="flex" alignItems="center" mb={4}>
+					<Typography
+						variant="h5"
+						component="h1"
+						fontWeight="bold"
+						className="text-gray-800"
+					>
+						Clusters
+					</Typography>
+					<Typography
+						variant="h6"
+						component="span"
+						className="ml-2 text-gray-500"
+					>
+						({clusters.length})
+					</Typography>
+				</Box>
+
+				{/* Cluster Grid */}
+				{isLoading < 0 ? (
+					<Grid
+						container
+						justifyContent="center"
+						alignItems="center"
+						sx={{ py: 4 }}
+					>
+						<CircularProgress />
+						<Typography sx={{ ml: 2 }}>Loading clusters...</Typography>
+					</Grid>
+				) : (
+					<ClusterGrid clusters={clusters} />
+				)}
+			</main>
+		</Layout>
 	);
 };
 

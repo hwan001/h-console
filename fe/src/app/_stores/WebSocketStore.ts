@@ -34,7 +34,6 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 		let lastPingTime: number | null = null;
 
 		ws.onopen = () => {
-			console.log("WebSocket connected");
 			set({ isConnected: true });
 
 			pingTimer = setInterval(() => {
@@ -57,7 +56,6 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 		};
 
 		ws.onclose = () => {
-			console.log("WebSocket closed, retrying...");
 			set({ socket: null, isConnected: false, latency: null });
 			setTimeout(() => get().connect(), 2000);
 		};
@@ -73,7 +71,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 	send: (msg: WSMessage) => {
 		const socket = get().socket;
 		if (!socket || socket.readyState !== WebSocket.OPEN) {
-			console.warn("⚠️ WebSocket not open. Message skipped:", msg);
+			console.warn("WebSocket not open. Message skipped:", msg);
 			return;
 		}
 

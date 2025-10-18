@@ -21,12 +21,16 @@ graph RL
             serverBE3["BE3"]
         end
         
-        serverRedis["redis"]
+        subgraph serverRedis["redis (Aggregated, Central Store)"]
+            serverRedis1["Redis1"]
+            serverRedis2["Redis2"]
+            serverRedis3["Redis3"]
+        end
     end
 
     subgraph cluster1["cluster 1"]
         cluster1_agent["Agent"]
-        cluster1_redis["Redis"]
+        cluster1_redis["Redis (Local buffer)"]
         cluster1_operator["Operator"]
         
         subgraph cluster1_node1["node"]
@@ -54,7 +58,7 @@ graph RL
 
     subgraph cluster2["cluster 2"]
         cluster2_agent["Agent"]
-        cluster2_redis["Redis"]
+        cluster2_redis["Redis (Local buffer)"]
         cluster2_operator["Operator"]
         
         subgraph cluster2_node1["node"]

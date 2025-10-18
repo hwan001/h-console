@@ -30,6 +30,13 @@ export default function Header() {
 			<AppBar position="static" className="shadow-none">
 				<Toolbar className="flex justify-between">
 					<div className="flex items-center">
+						<Typography variant="h6" className="text-gray-800 font-bold">
+							h-console
+						</Typography>
+					</div>
+					<div className="flex items-center space-x-4">
+						{/* Add more header actions or user menu here */}
+						<ConnectionIndicator />
 						<IconButton
 							size="large"
 							edge="start"
@@ -40,19 +47,12 @@ export default function Header() {
 						>
 							<MenuIcon />
 						</IconButton>
-						<Typography variant="h6" className="text-gray-800 font-bold">
-							h-console
-						</Typography>
-					</div>
-					<div className="flex items-center space-x-4">
-						{/* Add more header actions or user menu here */}
-						<ConnectionIndicator />
 					</div>
 				</Toolbar>
 			</AppBar>
 
 			<Drawer
-				anchor="left"
+				anchor="right"
 				open={open}
 				onClose={() => setOpen(false)}
 				slotProps={{
@@ -74,11 +74,6 @@ export default function Header() {
 								primary="Clusters"
 								onClick={() => {handleClick("/clusters")}}
 							/>
-						</ListItemButton>
-					</ListItem>
-					<ListItem disablePadding>
-						<ListItemButton>
-							<ListItemText primary="mypage" onClick={() => {handleClick("/mypage")}} />
 						</ListItemButton>
 					</ListItem>
 					<ListItem disablePadding>

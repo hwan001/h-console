@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 /* MUI + Tailwind reset 충돌 방지 */
 html, body, #__next {
   height: 100%;

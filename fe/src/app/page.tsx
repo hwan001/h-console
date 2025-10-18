@@ -1,12 +1,12 @@
-import Image from "next/image";
 import TestButton from "./_components/TestButton";
-import Header from "./_components/Header";
+import Layout from "./_components/Layout";
 
 export default function Home() {
 	return (
 		<>
-			<Header />
-			<TestButton endpoint="/mypage" content="mypage" />
+			<Layout>
+				<></>
+			</Layout>
 		</>
 	);
 }
