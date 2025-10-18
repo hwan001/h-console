@@ -1,12 +1,35 @@
 "use client";
 import { create } from "zustand";
+import { NodeInfo } from "./ClusterStore";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
-export type WSMessage = {
-	channel: string;
-	payload: any;
-};
+export interface WSMessage<T = any> {
+  channel: string;
+  payload: T;
+}
+
+export type MessageType = "metric" | "log" | "event" | "policy" | "system";
+
+export interface MetricPayload {
+  type: "metric";
+  timestamp: string;
+  nodes: NodeInfo[];
+  cpuUsage: number;
+  memoryUsage: number;
+}
+
+export interface LogPayload {
+  type: "log";
+  timestamp: string;
+  level: "INFO" | "WARN" | "ERROR";
+  message: string;
+}
+
+export type Payload = MetricPayload | LogPayload;
+
+export type ClusterWSMessage = WSMessage<Payload>;
+
 
 interface WebSocketState {
 	socket: WebSocket | null;

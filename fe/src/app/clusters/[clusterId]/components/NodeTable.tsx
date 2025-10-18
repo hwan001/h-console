@@ -16,7 +16,7 @@ import {
 import { NodeInfo } from "@/app/_stores/ClusterStore";
 
 export default function NodeTable({ nodes }: { nodes?: NodeInfo[] }) {
-	if (!nodes || nodes.length === 0) {
+	if (!nodes) {
 		return (
 			<Box
 				component={Paper}
@@ -48,7 +48,7 @@ export default function NodeTable({ nodes }: { nodes?: NodeInfo[] }) {
 				</TableHead>
 				<TableBody>
 					{nodes.map((node) => (
-						<TableRow key={node.id}>
+						<TableRow key={node.id ?? node.ip ?? node.hostname}>
 							<TableCell>{node.ip}</TableCell>
 							<TableCell>
 								<Chip

@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rmetrics.proto\x12\x08hconsole\"C\n\x06Metric\x12\x0c\n\x04node\x18\x01 \x01(\t\x12\x0b\n\x03\x63pu\x18\x02 \x01(\x01\x12\x0b\n\x03mem\x18\x03 \x01(\x01\x12\x11\n\ttimestamp\x18\x04 \x01(\x01\"\x1b\n\x08Response\x12\x0f\n\x07success\x18\x01 \x01(\x08\x32\x45\n\x0eMetricsService\x12\x33\n\x0bSendMetrics\x12\x10.hconsole.Metric\x1a\x12.hconsole.Response2M\n\x14MetricsStreamService\x12\x35\n\x0bSendMetrics\x12\x10.hconsole.Metric\x1a\x12.hconsole.Response(\x01\x42\'\n\x15io.h001.hconsole.grpcB\x0cMetricsProtoP\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\rmetrics.proto\x12\x08hconsole\"\x89\x01\n\x08NodeInfo\x12\n\n\x02id\x18\x01 \x01(\t\x12\n\n\x02ip\x18\x02 \x01(\t\x12\x10\n\x08hostname\x18\x03 \x01(\t\x12\x0c\n\x04role\x18\x04 \x01(\t\x12\x10\n\x08\x63puUsage\x18\x05 \x01(\x01\x12\x13\n\x0bmemoryUsage\x18\x06 \x01(\x01\x12\x0e\n\x06status\x18\x07 \x01(\t\x12\x0e\n\x06uptime\x18\x08 \x01(\t\">\n\x06Metric\x12!\n\x05nodes\x18\x01 \x03(\x0b\x32\x12.hconsole.NodeInfo\x12\x11\n\ttimestamp\x18\x02 \x01(\x01\"\x1b\n\x08Response\x12\x0f\n\x07success\x18\x01 \x01(\x08\x32\x45\n\x0eMetricsService\x12\x33\n\x0bSendMetrics\x12\x10.hconsole.Metric\x1a\x12.hconsole.Response2M\n\x14MetricsStreamService\x12\x35\n\x0bSendMetrics\x12\x10.hconsole.Metric\x1a\x12.hconsole.Response(\x01\x42\'\n\x15io.h001.hconsole.grpcB\x0cMetricsProtoP\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -32,12 +32,14 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'metrics_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'\n\025io.h001.hconsole.grpcB\014MetricsProtoP\001'
-  _globals['_METRIC']._serialized_start=27
-  _globals['_METRIC']._serialized_end=94
-  _globals['_RESPONSE']._serialized_start=96
-  _globals['_RESPONSE']._serialized_end=123
-  _globals['_METRICSSERVICE']._serialized_start=125
-  _globals['_METRICSSERVICE']._serialized_end=194
-  _globals['_METRICSSTREAMSERVICE']._serialized_start=196
-  _globals['_METRICSSTREAMSERVICE']._serialized_end=273
+  _globals['_NODEINFO']._serialized_start=28
+  _globals['_NODEINFO']._serialized_end=165
+  _globals['_METRIC']._serialized_start=167
+  _globals['_METRIC']._serialized_end=229
+  _globals['_RESPONSE']._serialized_start=231
+  _globals['_RESPONSE']._serialized_end=258
+  _globals['_METRICSSERVICE']._serialized_start=260
+  _globals['_METRICSSERVICE']._serialized_end=329
+  _globals['_METRICSSTREAMSERVICE']._serialized_start=331
+  _globals['_METRICSSTREAMSERVICE']._serialized_end=408
 # @@protoc_insertion_point(module_scope)

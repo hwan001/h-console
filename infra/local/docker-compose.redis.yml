@@ -1,0 +1,22 @@
+services:
+  redis:
+    image: redis:7.2
+    container_name: h-console-redis
+    ports:
+      - 6379:6379
+    volumes:
+      # - ./redis_data:/data
+      - ./redis.conf:/usr/local/etc/redis/redis.conf
+    command: ["redis-server", "/usr/local/etc/redis/redis.conf"]    
+    restart: always
+
+  redisinsight:
+    image: redis/redisinsight:latest
+    container_name: h-console-redisinsight
+    ports:
+      - 5540:5540
+    environment:
+      - RI_APP_PORT=5540
+    depends_on:
+      - redis
+    restart: always

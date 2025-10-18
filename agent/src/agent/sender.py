@@ -6,7 +6,7 @@ from agent import metrics_pb2, metrics_pb2_grpc
 
 
 class MetricsClient:
-    def __init__(self, host="localhost", port=9090):
+    def __init__(self, host="localhost", port=50051):
         self.host = host
         self.port = port
         self.channel = grpc.insecure_channel(f"{host}:{port}")
@@ -38,10 +38,24 @@ def metric_generator(metrics_queue):
                 break
 
             print(f"[GEN] Sending metric: {metric}")
+            nodes = [
+                metrics_pb2.NodeInfo(
+                    id=n.get("id", ""),
+                    ip=n.get("ip", "N/A"),
+                    hostname=n.get("hostname", ""),
+                    role=n.get("role", "data"),
+                    cpuUsage=float(n.get("cpuUsage", 0.0)),
+                    memoryUsage=float(n.get("memoryUsage", 0.0)),
+                    status=n.get("status", "unknown"),
+                    uptime=n.get("uptime", "0d 0h 0m")
+                )
+                for n in metric.get("nodes", [])
+            ]
+
             yield metrics_pb2.Metric(
-                node=str(metric.get("node", "node1")),
-                cpu=float(metric.get("cpu", 0.0)),
-                mem=float(metric.get("mem", 0.0)),
+                nodes=nodes,
+                # cpu=float(metric.get("cpu", 0.0)),
+                # mem=float(metric.get("mem", 0.0)),
                 timestamp=float(metric.get("timestamp", time.time())),
             )
         except queue.Empty:

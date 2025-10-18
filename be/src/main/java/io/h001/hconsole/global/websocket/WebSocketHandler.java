@@ -89,11 +89,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
         System.out.println("session id : " + session.getId() + ", unsubscribed from " + channel);
     }
 
-    private void broadcast(String channel, Object payload) throws Exception {
+    public void broadcast(String channel, Object payload) throws Exception {
         Set<WebSocketSession> sessions = channelSessions.getOrDefault(channel, Collections.emptySet());
         if (sessions.isEmpty()) return;
 
         Map<String, Object> msg = Map.of("channel", channel, "payload", payload);
+        
         String json = objectMapper.writeValueAsString(msg);
 
         for (WebSocketSession s : sessions) {
