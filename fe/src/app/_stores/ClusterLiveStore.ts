@@ -2,6 +2,7 @@ import { create } from "zustand";
 import {
 	ClusterWSMessage,
 	MetricPayload,
+	LogPayload,
 	useWebSocketStore,
 } from "./WebSocketStore";
 import type { NodeInfo } from "./ClusterStore";
@@ -10,18 +11,24 @@ interface LiveClusterState {
 	[clusterId: string]: NodeInfo[];
 }
 
+interface LogMap {
+	[clusterId: string]: string[];
+}
+
 interface ClusterLiveStore {
 	metric: LiveClusterState;
+	log: LogMap;
 	lastUpdate: Record<string, number>;
-    agentStatus: Record<string, "online" | "offline">;
+	agentStatus: Record<string, "online" | "offline">;
 	subscribeCluster: (clusterId: string) => void;
 	unsubscribeCluster: (clusterId: string) => void;
 }
 
 export const useClusterLiveStore = create<ClusterLiveStore>((set, get) => ({
 	metric: {},
+	log: {},
 	lastUpdate: {},
-    agentStatus: {},
+	agentStatus: {},
 	subscribeCluster: (clusterId) => {
 		const ws = useWebSocketStore.getState();
 		const channel = `username:${clusterId}`;
@@ -35,7 +42,19 @@ export const useClusterLiveStore = create<ClusterLiveStore>((set, get) => ({
 						...state.metric,
 						[clusterId]: payload.nodes,
 					},
-                    lastUpdate: { ...state.lastUpdate, [clusterId]: Date.now() },
+					lastUpdate: { ...state.lastUpdate, [clusterId]: Date.now() },
+				}));
+			} else if (msg.payload.type === "log") {
+				const payload = msg.payload as LogPayload;
+				set((state) => ({
+					log: {
+						...state.log,
+						[clusterId]: [
+							...(state.log[clusterId] ?? []),
+							`[${payload.timestamp}] [${payload.level}] ${payload.message}`,
+						],
+					},
+					lastUpdate: { ...state.lastUpdate, [clusterId]: Date.now() },
 				}));
 			} else {
 				console.log(`[LIVE] Ignored payload type: ${msg.payload.type}`);

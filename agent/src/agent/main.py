@@ -1,12 +1,9 @@
 from datetime import datetime
-import json
-import time
-import psutil
 import queue
-import threading
 from NodeCache import NodeCache
 from kubernetes import client, config
-from agent.sender import MetricsClient, metric_generator
+from agent.sender import gRPCClient, data_generator
+from collector import ClusterCollector
 
 q = queue.Queue()
 
@@ -22,30 +19,14 @@ def get_cluster_info():
         "nodeCount": len(nodes),
     }
 
-def collect_metrics():
-    cpu = psutil.cpu_percent()
-    mem_info = psutil.virtual_memory()
-    node_cache = NodeCache()
-    nodes = node_cache.get_nodes()
-
-    return {
-        "type": "metric",
-        "timestamp": time.time(),
-        # "cpu": cpu,
-        # "mem": mem_info.percent,
-        "nodes": nodes,
-    }
-
-def producer():
-    while True:
-        data = collect_metrics()
-        print(f"[PRODUCER] Collected: {data}")
-        q.put(data)
-        time.sleep(3)
-
-
 if __name__ == "__main__":
-    threading.Thread(target=producer, daemon=True).start()
+    collector = ClusterCollector(q)
+    collector.start()
 
-    metricsClient = MetricsClient(host="localhost", port=50051)
-    metricsClient.send_stream(metric_generator(q))
+    try:
+        metrics_client = gRPCClient(host="localhost", port=50051)
+        metrics_client.send_stream(data_generator(q))
+    except KeyboardInterrupt:
+        print("Stopping collectors...")
+        collector.stop()
+

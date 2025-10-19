@@ -2,28 +2,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useWebSocketStore, WSMessage } from "@/app/_stores/WebSocketStore";
 
-export default function LogViewer({ clusterId }: { clusterId: string }) {
-  const { connect, subscribe, unsubscribe } = useWebSocketStore();
-  const [logs, setLogs] = useState<string[]>([]);
+export default function LogViewer({ logs }: { logs: string[] }) {
   const logEndRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    connect();
-
-    const handler = (msg: WSMessage) => {
-      if (typeof msg.payload === "string") {
-        setLogs((prev) => [...prev, msg.payload]);
-      }
-    };
-
-    const channel = `cluster-${clusterId}:logs`;
-    subscribe(channel, handler);
-    return () => unsubscribe(channel, handler);
-  }, [clusterId]);
-
-  useEffect(() => {
-    logEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [logs]);
+  // useEffect(() => {
+  //   logEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  // }, [logs]);
 
   return (
     <div

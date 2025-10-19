@@ -4,7 +4,7 @@ package hconsole;
 
 option java_multiple_files = true;
 option java_package = "io.h001.hconsole.grpc";
-option java_outer_classname = "MetricsProto";
+option java_outer_classname = "StreamProto";
 
 message NodeInfo {
   string id = 1;
@@ -22,14 +22,23 @@ message Metric {
   double timestamp = 2;
 }
 
+message Log {
+  double timestamp = 1;
+  string level = 2;
+  string message = 3;
+}
+
+message StreamPayload {
+  oneof payload {
+    Metric metric = 1;
+    Log log = 2;
+  }
+}
+
 message Response {
   bool success = 1;
 }
 
-service MetricsService {
-  rpc SendMetrics(Metric) returns (Response);
-}
-
-service MetricsStreamService {
-  rpc SendMetrics (stream Metric) returns (Response);
+service StreamService {
+  rpc SendStream(stream StreamPayload) returns (Response);
 }

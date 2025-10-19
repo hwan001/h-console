@@ -26,6 +26,13 @@ export interface LogPayload {
   message: string;
 }
 
+export interface LogPayload {
+  type: "log";
+  timestamp: string;
+  level: "INFO" | "WARN" | "ERROR";
+  message: string;
+}
+
 export type Payload = MetricPayload | LogPayload;
 
 export type ClusterWSMessage = WSMessage<Payload>;

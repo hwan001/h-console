@@ -23,8 +23,6 @@ public record MetricResponse(String type, List<NodeInfo> nodes, Instant timestam
         return new MetricResponse(
                 "metric",
                 nodes,
-                // metric.getCpu(),
-                // metric.getMem(),
                 Instant.ofEpochMilli((long) (metric.getTimestamp() * 1000)));
     }
 

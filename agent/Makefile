@@ -28,8 +28,12 @@ k8s-deploy:
 	kubectl apply -f k8s/deploy/agent.yaml
 
 proto-gen:
+	@echo "Cleaning old generated proto files..."
+	rm -f src/agent/*_pb2.py src/agent/*_pb2_grpc.py
+	@echo "Generating gRPC Python stubs..."
 	uv run python -m grpc_tools.protoc \
 		-I=../protos \
 		--python_out=src/agent \
 		--grpc_python_out=src/agent \
 		../protos/*.proto
+	@echo "Proto generation complete."

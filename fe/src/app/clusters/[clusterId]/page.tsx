@@ -13,9 +13,10 @@ import LogViewer from "./components/LogViewer";
 export default function ClusterDetailPage() {
   const { clusterId } = useParams<{ clusterId: string }>();
   const { clusters, fetchClusters } = useClusterStore();
-  const { metric, subscribeCluster, unsubscribeCluster } = useClusterLiveStore();
+  const { log, metric, subscribeCluster, unsubscribeCluster } = useClusterLiveStore();
 
   const liveNodes = metric[clusterId] || [];
+  const liveLogs = log[clusterId] || [];
 
   useEffect(() => {
     if (clusters.length === 0) {
@@ -62,7 +63,7 @@ export default function ClusterDetailPage() {
           <Typography variant="h6" mb={2}>
             Log Viewer
           </Typography>
-          <LogViewer clusterId={clusterId} />
+          <LogViewer logs={liveLogs} />
         </Box>
       </Box>
     </Layout>
