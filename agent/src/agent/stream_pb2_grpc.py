@@ -39,12 +39,23 @@ class StreamServiceStub(object):
                 request_serializer=stream__pb2.StreamPayload.SerializeToString,
                 response_deserializer=stream__pb2.Response.FromString,
                 _registered_method=True)
+        self.Control = channel.stream_stream(
+                '/hconsole.StreamService/Control',
+                request_serializer=stream__pb2.ControlMessage.SerializeToString,
+                response_deserializer=stream__pb2.ControlMessage.FromString,
+                _registered_method=True)
 
 
 class StreamServiceServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def SendStream(self, request_iterator, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def Control(self, request_iterator, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -57,6 +68,11 @@ def add_StreamServiceServicer_to_server(servicer, server):
                     servicer.SendStream,
                     request_deserializer=stream__pb2.StreamPayload.FromString,
                     response_serializer=stream__pb2.Response.SerializeToString,
+            ),
+            'Control': grpc.stream_stream_rpc_method_handler(
+                    servicer.Control,
+                    request_deserializer=stream__pb2.ControlMessage.FromString,
+                    response_serializer=stream__pb2.ControlMessage.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -86,6 +102,33 @@ class StreamService(object):
             '/hconsole.StreamService/SendStream',
             stream__pb2.StreamPayload.SerializeToString,
             stream__pb2.Response.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def Control(request_iterator,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_stream(
+            request_iterator,
+            target,
+            '/hconsole.StreamService/Control',
+            stream__pb2.ControlMessage.SerializeToString,
+            stream__pb2.ControlMessage.FromString,
             options,
             channel_credentials,
             insecure,

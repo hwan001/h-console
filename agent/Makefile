@@ -2,7 +2,7 @@
 LOCAL_TASKS := local-run proto-gen
 DOCKER_TASKS := docker-build docker-run docker-clean
 K8S_TASKS := k8s-deploy
-COMMON_TASKS := run build clean proto
+COMMON_TASKS := run build clean proto deploy
 
 .PHONY: $(BUILD_TASKS) $(DOCKER_TASKS) $(K8S_TASKS) $(COMMON_TASKS)
 
@@ -10,6 +10,7 @@ run: local-run
 build: docker-build
 clean: docker-clean
 proto: proto-gen
+deploy: ghcr-deploy
 
 local-run:
 	uv run python3 src/agent/main.py
@@ -23,6 +24,9 @@ docke-run:
 docker-clean:
 	docker container prune -f
 	docker image prune -f
+
+ghcr-deploy:
+	@bash scripts/create_release_tag.sh
 
 k8s-deploy:
 	kubectl apply -f k8s/deploy/agent.yaml

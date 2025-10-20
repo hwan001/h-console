@@ -7,7 +7,7 @@ from collector import ClusterCollector
 
 q = queue.Queue()
 
-def get_cluster_info():
+def get_cluster_info_tmp():
     nodes = NodeCache().get_nodes()
     return {
         "id": "cluster-001",
@@ -22,6 +22,7 @@ def get_cluster_info():
 if __name__ == "__main__":
     collector = ClusterCollector(q)
     collector.start()
+    # print(collector.get_cluster_info())
 
     try:
         metrics_client = gRPCClient(host="localhost", port=50051)

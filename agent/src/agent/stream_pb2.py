@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cstream.proto\x12\x08hconsole\"\x89\x01\n\x08NodeInfo\x12\n\n\x02id\x18\x01 \x01(\t\x12\n\n\x02ip\x18\x02 \x01(\t\x12\x10\n\x08hostname\x18\x03 \x01(\t\x12\x0c\n\x04role\x18\x04 \x01(\t\x12\x10\n\x08\x63puUsage\x18\x05 \x01(\x01\x12\x13\n\x0bmemoryUsage\x18\x06 \x01(\x01\x12\x0e\n\x06status\x18\x07 \x01(\t\x12\x0e\n\x06uptime\x18\x08 \x01(\t\">\n\x06Metric\x12!\n\x05nodes\x18\x01 \x03(\x0b\x32\x12.hconsole.NodeInfo\x12\x11\n\ttimestamp\x18\x02 \x01(\x01\"8\n\x03Log\x12\x11\n\ttimestamp\x18\x01 \x01(\x01\x12\r\n\x05level\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\t\"\\\n\rStreamPayload\x12\"\n\x06metric\x18\x01 \x01(\x0b\x32\x10.hconsole.MetricH\x00\x12\x1c\n\x03log\x18\x02 \x01(\x0b\x32\r.hconsole.LogH\x00\x42\t\n\x07payload\"\x1b\n\x08Response\x12\x0f\n\x07success\x18\x01 \x01(\x08\x32L\n\rStreamService\x12;\n\nSendStream\x12\x17.hconsole.StreamPayload\x1a\x12.hconsole.Response(\x01\x42&\n\x15io.h001.hconsole.grpcB\x0bStreamProtoP\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0cstream.proto\x12\x08hconsole\"\x89\x01\n\x08NodeInfo\x12\n\n\x02id\x18\x01 \x01(\t\x12\n\n\x02ip\x18\x02 \x01(\t\x12\x10\n\x08hostname\x18\x03 \x01(\t\x12\x0c\n\x04role\x18\x04 \x01(\t\x12\x10\n\x08\x63puUsage\x18\x05 \x01(\x01\x12\x13\n\x0bmemoryUsage\x18\x06 \x01(\x01\x12\x0e\n\x06status\x18\x07 \x01(\t\x12\x0e\n\x06uptime\x18\x08 \x01(\t\">\n\x06Metric\x12!\n\x05nodes\x18\x01 \x03(\x0b\x32\x12.hconsole.NodeInfo\x12\x11\n\ttimestamp\x18\x02 \x01(\x01\"8\n\x03Log\x12\x11\n\ttimestamp\x18\x01 \x01(\x01\x12\r\n\x05level\x18\x02 \x01(\t\x12\x0f\n\x07message\x18\x03 \x01(\t\"\\\n\rStreamPayload\x12\"\n\x06metric\x18\x01 \x01(\x0b\x32\x10.hconsole.MetricH\x00\x12\x1c\n\x03log\x18\x02 \x01(\x0b\x32\r.hconsole.LogH\x00\x42\t\n\x07payload\"\x1b\n\x08Response\x12\x0f\n\x07success\x18\x01 \x01(\x08\"2\n\x0e\x43ontrolMessage\x12\x0f\n\x07\x63ommand\x18\x01 \x01(\t\x12\x0f\n\x07payload\x18\x02 \x01(\t2\x8f\x01\n\rStreamService\x12;\n\nSendStream\x12\x17.hconsole.StreamPayload\x1a\x12.hconsole.Response(\x01\x12\x41\n\x07\x43ontrol\x12\x18.hconsole.ControlMessage\x1a\x18.hconsole.ControlMessage(\x01\x30\x01\x42&\n\x15io.h001.hconsole.grpcB\x0bStreamProtoP\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -42,6 +42,8 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_STREAMPAYLOAD']._serialized_end=380
   _globals['_RESPONSE']._serialized_start=382
   _globals['_RESPONSE']._serialized_end=409
-  _globals['_STREAMSERVICE']._serialized_start=411
-  _globals['_STREAMSERVICE']._serialized_end=487
+  _globals['_CONTROLMESSAGE']._serialized_start=411
+  _globals['_CONTROLMESSAGE']._serialized_end=461
+  _globals['_STREAMSERVICE']._serialized_start=464
+  _globals['_STREAMSERVICE']._serialized_end=607
 # @@protoc_insertion_point(module_scope)

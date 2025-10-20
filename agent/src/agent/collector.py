@@ -91,6 +91,15 @@ class ClusterCollector:
                 daemon=True,
             ).start()
 
+    def get_cluster_info(self):
+        nodes = self.v1.list_node()
+        pods = self.v1.list_pod_for_all_namespaces()
+        return {
+            "node_count": len(nodes.items),
+            "pod_count": len(pods.items),
+            "nodes": [n.metadata.name for n in nodes.items],
+        }
+
     def start(self):
         self.running = True
         self.log.info("[ClusterCollector] Starting metric + log collectors...")

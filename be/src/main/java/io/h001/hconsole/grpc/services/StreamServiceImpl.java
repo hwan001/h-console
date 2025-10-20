@@ -31,7 +31,7 @@ public class StreamServiceImpl extends StreamServiceGrpc.StreamServiceImplBase {
                         Metric metric = payload.getMetric();
                         MetricResponse dto = MetricResponse.fromGrpc(metric);
                         String json = objectMapper.writeValueAsString(dto);
-                        
+
                         redisPublisherService.publish(channel, json);
                         log.info("[STREAM][{}] Published metric: {}", channel, json);
                     }else if (payload.hasLog()) {
@@ -50,7 +50,7 @@ public class StreamServiceImpl extends StreamServiceGrpc.StreamServiceImplBase {
 
             @Override
             public void onError(Throwable t) {
-                log.error("[STREAM] Error: {}", t.getMessage(), t);
+                log.error("[STREAM] Error: {}", t.getMessage());
             }
 
             @Override

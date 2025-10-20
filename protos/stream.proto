@@ -39,6 +39,12 @@ message Response {
   bool success = 1;
 }
 
+message ControlMessage {
+  string command = 1;
+  string payload = 2;
+}
+
 service StreamService {
   rpc SendStream(stream StreamPayload) returns (Response);
+  rpc Control(stream ControlMessage) returns (stream ControlMessage);
 }
