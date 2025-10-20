@@ -26,7 +26,7 @@ docker-clean:
 	docker image prune -f
 
 ghcr-deploy:
-	@bash scripts/create_release_tag.sh
+	@bash scripts/tag-release.sh
 
 k8s-deploy:
 	kubectl apply -f k8s/deploy/agent.yaml
