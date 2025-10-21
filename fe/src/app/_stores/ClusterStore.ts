@@ -1,4 +1,3 @@
-import cluster from "cluster";
 import { create } from "zustand";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
@@ -8,7 +7,7 @@ interface ClusterConfig {
 	name: string;
 	endpoint: string;
 	nodeCount?: number;
-	createdAt?: string; // ISO
+	createdAt?: string;
 }
 
 interface ClustersDTO {

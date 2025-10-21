@@ -85,13 +85,17 @@ protobuf {
 }
 
 sourceSets {
-    main {
-        proto {
-            srcDir '../protos' // 👈 루트 protos 폴더 참조
-        }
-        java {
-            srcDirs += ['build/generated/source/proto/main/java',
-                        'build/generated/source/proto/main/grpc']
-        }
-    }
+	main {
+		proto {
+			srcDir '../protos'
+		}
+		java {
+			srcDirs += ['build/generated/source/proto/main/java',
+			            'build/generated/source/proto/main/grpc']
+		}
+	}
+}
+
+tasks.named("compileJava").configure {
+	dependsOn("generateProto")
 }

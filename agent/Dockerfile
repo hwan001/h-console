@@ -7,8 +7,8 @@ ENV PATH="/root/.local/bin:${PATH}"
 ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
-COPY pyproject.toml uv.lock* ./
-COPY src ./src
+COPY ./pyproject.toml uv.lock* ./
+COPY ./src ./src
 
 RUN uv sync --frozen
 

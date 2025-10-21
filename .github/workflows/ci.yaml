@@ -39,7 +39,7 @@ jobs:
             echo "dockerfile=./agent/Dockerfile" >> $GITHUB_OUTPUT
             echo "image=${REGISTRY_URL}/${PROJECT_NAME}/agent" >> $GITHUB_OUTPUT
           elif [[ "${TAG}" == be-* ]]; then
-            echo "context=./be" >> $GITHUB_OUTPUT
+            echo "context=./" >> $GITHUB_OUTPUT
             echo "dockerfile=./be/Dockerfile" >> $GITHUB_OUTPUT
             echo "image=${REGISTRY_URL}/${PROJECT_NAME}/be" >> $GITHUB_OUTPUT
           elif [[ "${TAG}" == fe-* ]]; then

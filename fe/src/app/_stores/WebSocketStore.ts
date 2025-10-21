@@ -4,50 +4,54 @@ import { NodeInfo } from "./ClusterStore";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
-export interface WSMessage<T = any> {
-  channel: string;
-  payload: T;
+export type ClusterWSMessage = WSMessage<Payload>;
+
+interface WSMessage<T> {
+	channel: string;
+	payload: T;
 }
 
 export type MessageType = "metric" | "log" | "event" | "policy" | "system";
 
 export interface MetricPayload {
-  type: "metric";
-  timestamp: string;
-  nodes: NodeInfo[];
-  cpuUsage: number;
-  memoryUsage: number;
+	type: "metric";
+	timestamp: string;
+	nodes: NodeInfo[];
+	cpuUsage: number;
+	memoryUsage: number;
 }
 
 export interface LogPayload {
-  type: "log";
-  timestamp: string;
-  level: "INFO" | "WARN" | "ERROR";
-  message: string;
+	type: "log";
+	timestamp: string;
+	level: "INFO" | "WARN" | "ERROR";
+	message: string;
 }
 
-export interface LogPayload {
-  type: "log";
-  timestamp: string;
-  level: "INFO" | "WARN" | "ERROR";
-  message: string;
+export interface ControlPayload {
+	type: "system";
+	action: "subscribe" | "unsubscribe" | "ping" | "pong";
+	channel?: string;
 }
 
-export type Payload = MetricPayload | LogPayload;
-
-export type ClusterWSMessage = WSMessage<Payload>;
-
+export type Payload = MetricPayload | LogPayload | ControlPayload;
 
 interface WebSocketState {
 	socket: WebSocket | null;
-	channels: Record<string, ((msg: WSMessage) => void)[]>;
+	channels: Record<string, ((msg: WSMessage<Payload>) => void)[]>;
 	isConnected: boolean;
 	latency: number | null;
 	connect: () => void;
 	disconnect: () => void;
-	send: (msg: WSMessage) => void;
-	subscribe: (channel: string, handler: (msg: WSMessage) => void) => void;
-	unsubscribe: (channel: string, handler: (msg: WSMessage) => void) => void;
+	send: (msg: WSMessage<Payload>) => void;
+	subscribe: (
+		channel: string,
+		handler: (msg: WSMessage<Payload>) => void
+	) => void;
+	unsubscribe: (
+		channel: string,
+		handler: (msg: WSMessage<Payload>) => void
+	) => void;
 }
 
 export const useWebSocketStore = create<WebSocketState>((set, get) => ({
@@ -68,14 +72,25 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 
 			pingTimer = setInterval(() => {
 				lastPingTime = Date.now();
-				get().send({ channel: "system", payload: "ping" });
+				get().send({
+					channel: "system",
+					payload: {
+						type: "system",
+						action: "ping",
+					},
+				});
 			}, 5000);
 		};
 
 		ws.onmessage = (event) => {
-			const msg: WSMessage = JSON.parse(event.data);
+			const msg: WSMessage<Payload> = JSON.parse(event.data);
 
-			if (msg.channel === "system" && msg.payload === "pong" && lastPingTime) {
+			if (
+				msg.channel === "system" &&
+				msg.payload.type === "system" &&
+				msg.payload.action === "pong" &&
+				lastPingTime
+			) {
 				const latency = Date.now() - lastPingTime;
 				set({ latency });
 				return;
@@ -98,7 +113,7 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 		set({ socket: null, isConnected: false, latency: null });
 	},
 
-	send: (msg: WSMessage) => {
+	send: (msg: WSMessage<Payload>) => {
 		const socket = get().socket;
 		if (!socket || socket.readyState !== WebSocket.OPEN) {
 			console.warn("WebSocket not open. Message skipped:", msg);
@@ -118,7 +133,11 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 
 		get().send({
 			channel: "control",
-			payload: { action: "subscribe", channel },
+			payload: {
+				type: "system",
+				action: "subscribe",
+				channel,
+			} as ControlPayload,
 		});
 	},
 
@@ -135,7 +154,11 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 
 		get().send({
 			channel: "control",
-			payload: { action: "unsubscribe", channel },
+			payload: {
+				type: "system",
+				action: "unsubscribe",
+				channel,
+			} as ControlPayload,
 		});
 	},
 }));

@@ -7,6 +7,8 @@ export const mockClusters: ClusterWithStatus[] = [
 		clusterStatus: "running",
 		controlPlane: 3,
 		dataPlane: 5,
+		connectionStatus: "success",
+		endpoint: "https://alpha.cluster.local",
 		createdAt: "2025-10-17T08:00:00Z",
 		nodes: [
 			{

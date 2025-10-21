@@ -1,8 +1,9 @@
 "use client";
 import { Box, Grid, Typography } from "@mui/material";
 import ClusterCard from "./ClusterCard";
+import { ClusterWithStatus } from "@/app/_stores/ClusterStore";
 
-export default function ClusterGrid({ clusters }: { clusters: any[] }) {
+export default function ClusterGrid({ clusters }: { clusters: ClusterWithStatus[] }) {
 	if (!clusters) {
 		return (
 			<Box className="flex flex-col items-center justify-center py-10 text-center text-gray-500">

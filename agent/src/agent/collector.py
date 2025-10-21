@@ -105,7 +105,7 @@ class ClusterCollector:
         self.log.info("[ClusterCollector] Starting metric + log collectors...")
 
         threading.Thread(target=self._metric_loop, daemon=True).start()
-        # threading.Thread(target=self._start_log_collectors, daemon=True).start()
+        #threading.Thread(target=self._start_log_collectors, daemon=True).start()
 
     def stop(self):
         self.running = False
