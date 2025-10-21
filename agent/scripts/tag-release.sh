@@ -4,13 +4,16 @@ set -e
 SERVICE="agent"
 DATE=$(date +'%Y-%m-%d')
 
+# 태그 가져오기
+git fetch --prune --tags
+
 # 최근 태그 검색
 LATEST=$(git tag | grep "^${SERVICE}-${DATE}" | sort | tail -n1)
 
 if [ -z "$LATEST" ]; then
   NEXT_NUM=01
 else
-  LAST_NUM=$(echo "$LATEST" | awk -F'-' '{print $4}')
+  LAST_NUM=$(echo "$LATEST" | awk -F'-' '{print $NF}')
   NEXT_NUM=$(printf "%02d" $((10#$LAST_NUM + 1)))
 fi
 
