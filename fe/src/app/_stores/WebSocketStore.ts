@@ -4,14 +4,15 @@ import { NodeInfo } from "./ClusterStore";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "";
 
-export type ClusterWSMessage = WSMessage<Payload>;
+// export type ClusterWSMessage = WSMessage<Payload>;
+export type LiveWSMessage = WSMessage<MetricPayload> | WSMessage<LogPayload>;
 
 interface WSMessage<T> {
 	channel: string;
 	payload: T;
 }
 
-export type MessageType = "metric" | "log" | "event" | "policy" | "system";
+export type MessageType = "metric" | "log" | "system";
 
 export interface MetricPayload {
 	type: "metric";
@@ -29,12 +30,15 @@ export interface LogPayload {
 }
 
 export interface ControlPayload {
-	type: "system";
-	action: "subscribe" | "unsubscribe" | "ping" | "pong";
+	action: "subscribe" | "unsubscribe";
 	channel?: string;
 }
 
-export type Payload = MetricPayload | LogPayload | ControlPayload;
+interface LatencyPayload {
+	action: "ping" | "pong";
+}
+
+export type Payload = MetricPayload | LogPayload | ControlPayload | LatencyPayload;
 
 interface WebSocketState {
 	socket: WebSocket | null;
@@ -73,21 +77,19 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 			pingTimer = setInterval(() => {
 				lastPingTime = Date.now();
 				get().send({
-					channel: "system",
+					channel: "latency",
 					payload: {
-						type: "system",
 						action: "ping",
 					},
-				});
+				} as WSMessage<LatencyPayload>);
 			}, 5000);
 		};
 
 		ws.onmessage = (event) => {
-			const msg: WSMessage<Payload> = JSON.parse(event.data);
+			const msg: WSMessage<LatencyPayload> = JSON.parse(event.data);
 
 			if (
-				msg.channel === "system" &&
-				msg.payload.type === "system" &&
+				msg.channel === "latency" &&
 				msg.payload.action === "pong" &&
 				lastPingTime
 			) {
@@ -134,7 +136,6 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 		get().send({
 			channel: "control",
 			payload: {
-				type: "system",
 				action: "subscribe",
 				channel,
 			} as ControlPayload,
@@ -155,7 +156,6 @@ export const useWebSocketStore = create<WebSocketState>((set, get) => ({
 		get().send({
 			channel: "control",
 			payload: {
-				type: "system",
 				action: "unsubscribe",
 				channel,
 			} as ControlPayload,

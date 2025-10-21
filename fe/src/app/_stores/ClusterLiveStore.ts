@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import {
-	ClusterWSMessage,
+	LiveWSMessage,
 	MetricPayload,
 	LogPayload,
 	useWebSocketStore,
@@ -34,7 +34,7 @@ export const useClusterLiveStore = create<ClusterLiveStore>((set, get) => ({
 		const channel = `username:${clusterId}`;
 
 		ws.subscribe(channel, (rawPayload) => {
-			const msg = rawPayload as ClusterWSMessage;
+			const msg = rawPayload as LiveWSMessage;
 			if (msg.payload.type === "metric") {
 				const payload = msg.payload as MetricPayload;
 				set((state) => ({
@@ -57,7 +57,7 @@ export const useClusterLiveStore = create<ClusterLiveStore>((set, get) => ({
 					lastUpdate: { ...state.lastUpdate, [clusterId]: Date.now() },
 				}));
 			} else {
-				console.log(`[LIVE] Ignored payload type: ${msg.payload.type}`);
+				console.log(`[LIVE] Ignored payload type: ${msg.payload}`);
 			}
 		});
 

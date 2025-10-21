@@ -33,36 +33,54 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String channel = (String) msg.get("channel");
         Object payload = msg.get("payload");
 
-        // 레이턴시 측정용
-        if ("system".equals(channel) && "ping".equals(payload)) {
-            session.sendMessage(new TextMessage(
-                objectMapper.writeValueAsString(Map.of("channel", "system", "payload", "pong"))
-            ));
+        // // 레이턴시 측정용
+        // if ("system".equals(channel) && "ping".equals(payload)) {
+        // session.sendMessage(new TextMessage(
+        // objectMapper.writeValueAsString(Map.of("channel", "system", "payload",
+        // "pong"))));
+        // return;
+        // }
+
+        if ("latency".equals(channel)) {
+            handleLatencyMessage(session, payload);
             return;
         }
 
-        // 구독 관리용 control 채널 처리
         if ("control".equals(channel)) {
             handleControlMessage(session, payload);
             return;
         }
 
-        // 일반 메시지 — 해당 채널 구독자에게 브로드캐스트
         broadcast(channel, payload);
     }
 
+    private void handleLatencyMessage(WebSocketSession session, Object payload) throws Exception {
+        if (!(payload instanceof Map))
+            return;
+        Map<String, Object> map = (Map<String, Object>) payload;
+        String action = (String) map.get("action");
+
+        if ("ping".equals(action)) {
+            session.sendMessage(new TextMessage(
+                    objectMapper.writeValueAsString(
+                            Map.of("channel", "latency", "payload", Map.of("action", "pong")))));
+        }
+    }
+
     private void handleControlMessage(WebSocketSession session, Object payload) {
-        if (!(payload instanceof Map)) return;
+        if (!(payload instanceof Map))
+            return;
         Map<String, Object> control = (Map<String, Object>) payload;
         String action = (String) control.get("action");
         String targetChannel = (String) control.get("channel");
 
-        if (targetChannel == null) return;
+        if (targetChannel == null)
+            return;
 
         switch (action) {
             case "subscribe" -> subscribe(session, targetChannel);
             case "unsubscribe" -> unsubscribe(session, targetChannel);
-            default -> System.out.println("⚠️ Unknown control action: " + action);
+            default -> System.out.println("Unknown control action: " + action);
         }
     }
 
@@ -91,14 +109,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     public void broadcast(String channel, Object payload) throws Exception {
         Set<WebSocketSession> sessions = channelSessions.getOrDefault(channel, Collections.emptySet());
-        if (sessions.isEmpty()) return;
+        if (sessions.isEmpty())
+            return;
 
         Map<String, Object> msg = Map.of("channel", channel, "payload", payload);
-        
+
         String json = objectMapper.writeValueAsString(msg);
 
         for (WebSocketSession s : sessions) {
-            if (s.isOpen()) s.sendMessage(new TextMessage(json));
+            if (s.isOpen())
+                s.sendMessage(new TextMessage(json));
         }
 
         System.out.println("Broadcast to " + channel + " (" + sessions.size() + " clients)");
@@ -112,7 +132,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 Set<WebSocketSession> sessions = channelSessions.get(ch);
                 if (sessions != null) {
                     sessions.remove(session);
-                    if (sessions.isEmpty()) channelSessions.remove(ch);
+                    if (sessions.isEmpty())
+                        channelSessions.remove(ch);
                 }
             }
         }
