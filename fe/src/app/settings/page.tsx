@@ -1,7 +1,7 @@
 "use client";
 
 import Layout from "@/app/_components/Layout";
-import { useSettingStore } from "@app/_stores/SettingStore";
+import { ThemeName, useSettingStore } from "@app/_stores/SettingStore";
 import { Box, Typography, ButtonGroup, Button } from "@mui/material";
 
 const SettingsPage = () => {
@@ -23,7 +23,7 @@ const SettingsPage = () => {
 							<Button
 								key={t}
 								variant={themeName === t ? "contained" : "outlined"}
-								onClick={() => setTheme(t as any)}
+								onClick={() => setTheme(t as ThemeName)}
 							>
 								{t.toUpperCase()}
 							</Button>
