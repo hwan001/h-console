@@ -9,6 +9,7 @@ import {
 	Typography,
 	Chip,
 	Box,
+	useTheme,
 } from "@mui/material";
 import { ClusterWithStatus } from "@/app/_stores/ClusterStore";
 
@@ -17,6 +18,8 @@ interface ClusterCardProps {
 }
 
 export default function ClusterCard({ cluster }: ClusterCardProps) {
+	const theme = useTheme();
+
 	const statusColor =
 		cluster.clusterStatus === "running"
 			? "success"
@@ -28,16 +31,20 @@ export default function ClusterCard({ cluster }: ClusterCardProps) {
 		<Link href={`/clusters/${cluster.id}`}>
 			<Card
 				variant="outlined"
-				className="bg-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all"
 				sx={{
+					bgcolor: theme.palette.background.paper,
+					borderRadius: theme.shape.borderRadius,
+					boxShadow: theme.shadows[1],
 					"&:hover": {
+						boxShadow: theme.shadows[4],
 						transform: "translateY(-2px)",
 					},
+					transition: "all 0.2s ease",
 				}}
 			>
 				<CardActionArea>
 					<CardContent>
-						{/* 카드 헤더 */}
+						{/* 헤더 */}
 						<Box
 							display="flex"
 							justifyContent="space-between"
@@ -47,7 +54,7 @@ export default function ClusterCard({ cluster }: ClusterCardProps) {
 							<Typography
 								variant="subtitle1"
 								fontWeight="bold"
-								className="text-gray-800 p-3"
+								sx={{ color: theme.palette.text.primary, p: 1 }}
 							>
 								{cluster.name || "ClusterName"}
 							</Typography>
@@ -62,12 +69,12 @@ export default function ClusterCard({ cluster }: ClusterCardProps) {
 							/>
 						</Box>
 
-						{/* 카드 내용 */}
+						{/* 내용 */}
 						<Box display="flex" flexDirection="column" gap={0.5}>
-							<Typography variant="body2" className="text-gray-700">
+							<Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
 								Control Plane: {cluster.controlPlane ?? 0}
 							</Typography>
-							<Typography variant="body2" className="text-gray-700">
+							<Typography variant="body2" sx={{ color: theme.palette.text.secondary }}>
 								Data Plane: {cluster.dataPlane ?? 0}
 							</Typography>
 						</Box>

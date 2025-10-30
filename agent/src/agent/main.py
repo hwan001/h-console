@@ -7,17 +7,17 @@ from collector import ClusterCollector
 
 q = queue.Queue()
 
-def get_cluster_info_tmp():
-    nodes = NodeCache().get_nodes()
-    return {
-        "id": "cluster-001",
-        "hostname": "h-console-cluster",
-        "status": "running" if any(n["status"] == "healthy" for n in nodes) else "stopped",
-        "nodes": nodes,
-        "createdAt": datetime.now().isoformat(),
-        "endpoint": nodes[0]["ip"] if nodes else None,
-        "nodeCount": len(nodes),
-    }
+# def get_cluster_info_tmp():
+#     nodes = NodeCache().get_nodes()
+#     return {
+#         "id": "cluster-001",
+#         "hostname": "h-console-cluster",
+#         "status": "running" if any(n["status"] == "healthy" for n in nodes) else "stopped",
+#         "nodes": nodes,
+#         "createdAt": datetime.now().isoformat(),
+#         "endpoint": nodes[0]["ip"] if nodes else None,
+#         "nodeCount": len(nodes),
+#     }
 
 if __name__ == "__main__":
     collector = ClusterCollector(q)

@@ -14,13 +14,23 @@ import {
 	Typography,
 } from "@mui/material";
 import { NodeInfo } from "@/app/_stores/ClusterStore";
+import { useTheme } from "@mui/material/styles";
 
 export default function NodeTable({ nodes }: { nodes?: NodeInfo[] }) {
+	const theme = useTheme();
+
 	if (!nodes) {
 		return (
 			<Box
 				component={Paper}
-				className="rounded-2xl shadow-sm p-6 text-center bg-gray-50"
+				sx={{
+					borderRadius: (theme.shape.borderRadius as number) * 2,
+					boxShadow: theme.shadows[1],
+					p: 6,
+					textAlign: "center",
+					backgroundColor: theme.palette.background.paper,
+					color: theme.palette.text.primary,
+				}}
 			>
 				<Typography variant="h6" color="text.secondary">
 					No nodes available
@@ -33,10 +43,22 @@ export default function NodeTable({ nodes }: { nodes?: NodeInfo[] }) {
 	}
 
 	return (
-		<TableContainer component={Paper} className="rounded-2xl shadow-sm">
+		<TableContainer
+			component={Paper}
+			sx={{
+				borderRadius: (theme.shape.borderRadius as number) * 2,
+				boxShadow: theme.shadows[1],
+				backgroundColor: theme.palette.background.paper,
+				color: theme.palette.text.primary,
+			}}
+		>
 			<Table>
 				<TableHead>
-					<TableRow className="bg-gray-200">
+					<TableRow
+						sx={{
+							backgroundColor: theme.palette.action.hover,
+						}}
+					>
 						<TableCell>IP</TableCell>
 						<TableCell>Role</TableCell>
 						<TableCell>Hostname</TableCell>
@@ -48,7 +70,14 @@ export default function NodeTable({ nodes }: { nodes?: NodeInfo[] }) {
 				</TableHead>
 				<TableBody>
 					{nodes.map((node) => (
-						<TableRow key={node.id ?? node.ip ?? node.hostname}>
+						<TableRow
+							key={node.id ?? node.ip ?? node.hostname}
+							sx={{
+								"&:hover": {
+									backgroundColor: theme.palette.action.selected,
+								},
+							}}
+						>
 							<TableCell>{node.ip}</TableCell>
 							<TableCell>
 								<Chip

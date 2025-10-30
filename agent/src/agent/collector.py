@@ -1,5 +1,8 @@
 import time
 import logging
+import hashlib
+import base64
+
 import threading
 from NodeCache import NodeCache
 from kubernetes import client, config, watch
@@ -100,12 +103,32 @@ class ClusterCollector:
             "nodes": [n.metadata.name for n in nodes.items],
         }
 
+
+    def get_cluster_fingerprint(self):
+        self.v1 = client.CoreV1Api()
+
+        # kube-system namespace UID
+        ns = self.v1.read_namespace("kube-system")
+        kube_system_uid = ns.metadata.uid
+
+        # cluster UID (from the default service account or cluster-info ConfigMap)
+        cm = self.v1.read_namespaced_config_map("cluster-info", "kube-public")
+        cluster_ca = cm.data.get("certificate-authority-data", "")
+        cluster_ca_hash = hashlib.sha256(base64.b64decode(cluster_ca)).hexdigest()
+
+        # Combine with kube-system UID
+        fingerprint_raw = f"{kube_system_uid}:{cluster_ca_hash}"
+        fingerprint = hashlib.sha256(fingerprint_raw.encode()).hexdigest()
+
+        return fingerprint
+
     def start(self):
         self.running = True
-        self.log.info("[ClusterCollector] Starting metric + log collectors...")
-
+        self.log.debug("[ClusterCollector] Starting metric + log collectors...")
+        self.log.debug(f"[ClusterCollector] Cluster Fingerprint: {self.get_cluster_fingerprint()}")
+        
         threading.Thread(target=self._metric_loop, daemon=True).start()
-        #threading.Thread(target=self._start_log_collectors, daemon=True).start()
+        # threading.Thread(target=self._start_log_collectors, daemon=True).start()
 
     def stop(self):
         self.running = False

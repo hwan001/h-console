@@ -1,8 +1,11 @@
 "use client";
 import { useWebSocketStore } from "@/app/_stores/WebSocketStore";
+import { useTheme } from "@mui/material/styles";
+import { Typography, Box } from "@mui/material";
 
 export default function ConnectionIndicator() {
 	const { isConnected, latency } = useWebSocketStore();
+	const theme = useTheme();
 
 	const getColor = () => {
 		if (!isConnected) return "bg-red-500";
@@ -13,19 +16,26 @@ export default function ConnectionIndicator() {
 	};
 
 	return (
-		<div className="flex items-center gap-2">
+		<Box display="flex" alignItems="center" gap={1}>
 			<span
 				className={`inline-block w-3 h-3 rounded-full ${getColor()} ${
 					isConnected ? "animate-pulse" : ""
 				}`}
 			/>
-			<span className="text-sm text-gray-300">
+			
+			<Typography
+				variant="body2"
+				sx={{
+					color: theme.palette.text.secondary,
+					fontWeight: "bold",
+				}}
+			>
 				{isConnected
 					? latency !== null
 						? `Connected (${latency} ms)`
-						: "Connecting.."
+						: "Connecting..."
 					: "Disconnected"}
-			</span>
-		</div>
+			</Typography>
+		</Box>
 	);
 }

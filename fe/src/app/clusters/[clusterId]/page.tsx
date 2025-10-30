@@ -9,6 +9,7 @@ import { useClusterLiveStore } from "@/app/_stores/ClusterLiveStore";
 import ClusterInfo from "./components/ClusterInfo";
 import NodeTable from "./components/NodeTable";
 import LogViewer from "./components/LogViewer";
+import EnhancedTable from "@/app/_components/EnhancedTable";
 
 export default function ClusterDetailPage() {
   const { clusterId } = useParams<{ clusterId: string }>();
@@ -66,6 +67,8 @@ export default function ClusterDetailPage() {
           <LogViewer logs={liveLogs} />
         </Box>
       </Box>
+
+      <EnhancedTable />
     </Layout>
   );
 }

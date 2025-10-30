@@ -29,9 +29,11 @@ message Log {
 }
 
 message StreamPayload {
+  string clusterId = 1;
+
   oneof payload {
-    Metric metric = 1;
-    Log log = 2;
+    Metric metric = 2;
+    Log log = 3;
   }
 }
 
