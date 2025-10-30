@@ -10,7 +10,7 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 env:
@@ -74,3 +74,9 @@ jobs:
       - name: Logout from registry
         if: always()
         run: docker logout ${{ env.REGISTRY_URL }}
+
+      - name: Delete tag if build failed
+        if: failure()
+        run: |
+          echo "Build failed. Deleting tag $GITHUB_REF_NAME..."
+          git push origin :refs/tags/${GITHUB_REF_NAME}
