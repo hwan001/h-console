@@ -15,7 +15,8 @@ permissions:
 
 env:
   REGISTRY_URL: ${{ vars.REGISTRY_URL != '' && vars.REGISTRY_URL || 'ghcr.io' }}
-  PROJECT_NAME: ${{ vars.PROJECT_NAME != '' && vars.PROJECT_NAME || github.repository_owner }}
+  REPOSITORY_OWNER: ${{ vars.REGISTRY_USERNAME != '' && vars.REGISTRY_USERNAME || github.repository_owner }}
+  PROJECT_NAME: ${{ vars.PROJECT_NAME != '' && vars.PROJECT_NAME || github.event.repository.name }}
 
 jobs:
   build-and-push:
@@ -37,15 +38,15 @@ jobs:
           if [[ "${TAG}" == agent-* ]]; then
             echo "context=./agent" >> $GITHUB_OUTPUT
             echo "dockerfile=./agent/Dockerfile" >> $GITHUB_OUTPUT
-            echo "image=${REGISTRY_URL}/${PROJECT_NAME}/agent" >> $GITHUB_OUTPUT
+            echo "image=${REGISTRY_URL}/${REPOSITORY_OWNER}/${PROJECT_NAME}/agent" >> $GITHUB_OUTPUT
           elif [[ "${TAG}" == be-* ]]; then
             echo "context=./" >> $GITHUB_OUTPUT
             echo "dockerfile=./be/Dockerfile" >> $GITHUB_OUTPUT
-            echo "image=${REGISTRY_URL}/${PROJECT_NAME}/be" >> $GITHUB_OUTPUT
+            echo "image=${REGISTRY_URL}/${REPOSITORY_OWNER}/${PROJECT_NAME}/be" >> $GITHUB_OUTPUT
           elif [[ "${TAG}" == fe-* ]]; then
             echo "context=./fe" >> $GITHUB_OUTPUT
             echo "dockerfile=./fe/Dockerfile" >> $GITHUB_OUTPUT
-            echo "image=${REGISTRY_URL}/${PROJECT_NAME}/fe" >> $GITHUB_OUTPUT
+            echo "image=${REGISTRY_URL}/${REPOSITORY_OWNER}/${PROJECT_NAME}/fe" >> $GITHUB_OUTPUT
           else
             echo "Unknown tag prefix: $TAG"
             exit 1
