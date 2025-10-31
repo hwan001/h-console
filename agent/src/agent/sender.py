@@ -4,23 +4,34 @@ import traceback
 import queue
 from agent import stream_pb2, stream_pb2_grpc
 
+
 class gRPCClient:
-    def __init__(self, host="localhost", port=50051):
+    def __init__(self, host="localhost", port=50051, token=""):
         self.host = host
         self.port = port
+        self.token = token
         self.channel = grpc.insecure_channel(f"{host}:{port}")
         self.stub = stream_pb2_grpc.StreamServiceStub(self.channel)
 
-    def send_stream(self, data_iterator):
+    def send_stream(self, data_queue):
+        metadata = []
+        if self.token:
+            metadata = [("authorization", f"Bearer {self.token}")]
+
         while True:
             try:
-                print(f"[gRPC] Connected to {self.host}:{self.port}")
-                response = self.stub.SendStream(data_iterator)
+                print(f"[gRPC] Connecting to {self.host}:{self.port}")
+                response = self.stub.SendStream(
+                    data_generator(data_queue), metadata=metadata)
                 print("[gRPC] Response:", response.success)
                 break
             except grpc.RpcError as e:
                 print(f"[gRPC] Error: {e.code()} - {e.details()}")
                 time.sleep(3)
+            except Exception as e:
+                print(f"[gRPC] Unexpected error: {e}")
+                time.sleep(3)
+
 
 def data_generator(data_queue):
     while True:
@@ -28,6 +39,7 @@ def data_generator(data_queue):
             item = data_queue.get(timeout=2)
             item_type = item.get("type")
             timestamp = float(item.get("timestamp", time.time()))
+            cluster_id = item.get("cluster", "unknown") 
 
             if item_type == "metric":
                 nodes = [
@@ -43,8 +55,9 @@ def data_generator(data_queue):
                     )
                     for n in item.get("nodes", [])
                 ]
-                
+
                 yield stream_pb2.StreamPayload(
+                    clusterId=cluster_id,
                     metric=stream_pb2.Metric(
                         timestamp=timestamp,
                         nodes=nodes,
@@ -53,6 +66,7 @@ def data_generator(data_queue):
                 print(f"[GEN][METRIC] Sent metric ({len(nodes)} nodes)")
             elif item_type == "log":
                 yield stream_pb2.StreamPayload(
+                    clusterId=cluster_id,
                     log=stream_pb2.Log(
                         timestamp=timestamp,
                         level=item.get("level", "INFO"),

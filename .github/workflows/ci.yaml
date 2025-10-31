@@ -70,7 +70,9 @@ jobs:
           context: ${{ steps.vars.outputs.context }}
           file: ${{ steps.vars.outputs.dockerfile }}
           push: true
-          tags: ${{ steps.vars.outputs.image }}:${{ steps.vars.outputs.version }}
+          tags: |
+            ${{ steps.vars.outputs.image }}:${{ steps.vars.outputs.version }}
+            ${{ steps.vars.outputs.image }}:latest
 
       - name: Logout from registry
         if: always()

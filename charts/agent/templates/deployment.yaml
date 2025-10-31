@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "agent.fullname" . }}
+  namespace: {{ .Values.namespace | default .Release.Namespace }}
+  labels:
+    {{- include "agent.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: {{ include "agent.name" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "agent.name" . }}
+        cluster: {{ .Values.clusterName | default "unknown" }}
+    spec:
+      serviceAccountName: {{ include "agent.fullname" . }}
+      containers:
+        - name: {{ include "agent.name" . }}
+          image: "{{ default "busybox" .Values.image.repository }}:{{ default "latest" .Values.image.tag }}"
+          imagePullPolicy: {{ default "IfNotPresent" .Values.image.pullPolicy }}
+          {{- if or .Values.config .Values.secret }}
+          envFrom:
+            {{- if .Values.config }}
+            - configMapRef:
+                name: {{ include "agent.fullname" . }}-config
+            {{- end }}
+            {{- if .Values.secret }}
+            - secretRef:
+                name: {{ include "agent.fullname" . }}-secret
+            {{- end }}
+          {{- end }}

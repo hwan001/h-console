@@ -2,42 +2,40 @@ import time
 import logging
 import hashlib
 import base64
-
 import threading
+from kubernetes import client, watch
 from NodeCache import NodeCache
-from kubernetes import client, config, watch
 
 
 class ClusterCollector:
-    def __init__(self, q, interval=3):
+    def __init__(self, q, interval=None, config=None):
         self.q = q
-        self.interval = interval
+        self.config = config
+        self.interval = interval or getattr(config, "POLL_INTERVAL", 5)
         self.running = False
 
         logging.basicConfig(level=logging.INFO,
                             format="[%(levelname)s] %(message)s")
         self.log = logging.getLogger("collector")
 
-        try:
-            config.load_incluster_config()
-            self.log.info("[ClusterCollector] Loaded in-cluster config")
-        except config.ConfigException:
-            config.load_kube_config(
-                context="k8sm1@kubernetes",
-                config_file="/Users/hwan/Library/Application Support/OpenLens/kubeconfigs/6ef3302a-07b0-4a54-849d-244cba341f05",
-            )
-            self.log.info("[ClusterCollector] Loaded local kubeconfig")
+        self.log.info("[ClusterCollector] Loaded local kubeconfig")
+
         self.v1 = client.CoreV1Api()
 
     def _collect_metrics(self):
         node_cache = NodeCache()
         nodes = node_cache.get_nodes()
+        cluster_name = getattr(self.config, "CLUSTER_NAME", "unknown")
+
         data = {
             "type": "metric",
             "timestamp": time.time(),
+            "cluster": cluster_name,
             "nodes": nodes,
         }
-        self.log.info(f"[METRIC] Collected: {data}")
+
+        self.log.info(
+            f"[METRIC] Collected: {len(nodes)} nodes ({cluster_name})")
         self.q.put(data)
 
     def _metric_loop(self):
@@ -45,7 +43,7 @@ class ClusterCollector:
             try:
                 self._collect_metrics()
             except Exception as e:
-                self.log.info(f"[METRIC] Error collecting metrics: {e}")
+                self.log.warning(f"[METRIC] Error collecting metrics: {e}")
             time.sleep(self.interval)
 
     def _stream_single_container_logs(self, namespace, pod_name, container_name):
@@ -63,19 +61,17 @@ class ClusterCollector:
                     "type": "log",
                     "timestamp": time.time(),
                     "level": "INFO",
+                    "cluster": getattr(self.config, "CLUSTER_NAME", "unknown"),
                     "message": log_line.strip(),
                 }
-                self.log.info(
-                    f"[LOG][{pod_name}/{container_name}] {log_entry['message']}")
                 self.q.put(log_entry)
         except Exception as e:
-            self.log.info(f"[LOG][{pod_name}/{container_name}] Error: {e}")
+            self.log.warning(f"[LOG][{pod_name}/{container_name}] Error: {e}")
 
     def _stream_pod_logs(self, namespace, pod_name):
         pod = self.v1.read_namespaced_pod(name=pod_name, namespace=namespace)
         containers = [c.name for c in pod.spec.containers]
         for container in containers:
-            self.log.info(f"[DEBUG] Watching logs for {pod_name}/{container}")
             threading.Thread(
                 target=self._stream_single_container_logs,
                 args=(namespace, pod_name, container),
@@ -86,11 +82,9 @@ class ClusterCollector:
         self.log.info("[LOG] Starting log collectors for all pods...")
         pods = self.v1.list_pod_for_all_namespaces(watch=False).items
         for pod in pods:
-            namespace = pod.metadata.namespace
-            pod_name = pod.metadata.name
             threading.Thread(
                 target=self._stream_pod_logs,
-                args=(namespace, pod_name),
+                args=(pod.metadata.namespace, pod.metadata.name),
                 daemon=True,
             ).start()
 
@@ -103,30 +97,26 @@ class ClusterCollector:
             "nodes": [n.metadata.name for n in nodes.items],
         }
 
-
     def get_cluster_fingerprint(self):
-        self.v1 = client.CoreV1Api()
-
-        # kube-system namespace UID
         ns = self.v1.read_namespace("kube-system")
         kube_system_uid = ns.metadata.uid
 
-        # cluster UID (from the default service account or cluster-info ConfigMap)
         cm = self.v1.read_namespaced_config_map("cluster-info", "kube-public")
         cluster_ca = cm.data.get("certificate-authority-data", "")
-        cluster_ca_hash = hashlib.sha256(base64.b64decode(cluster_ca)).hexdigest()
+        cluster_ca_hash = hashlib.sha256(
+            base64.b64decode(cluster_ca)).hexdigest()
 
-        # Combine with kube-system UID
         fingerprint_raw = f"{kube_system_uid}:{cluster_ca_hash}"
         fingerprint = hashlib.sha256(fingerprint_raw.encode()).hexdigest()
-
         return fingerprint
 
     def start(self):
         self.running = True
-        self.log.debug("[ClusterCollector] Starting metric + log collectors...")
-        self.log.debug(f"[ClusterCollector] Cluster Fingerprint: {self.get_cluster_fingerprint()}")
-        
+        cluster_name = getattr(self.config, "CLUSTER_NAME", "unknown")
+        self.log.info(
+            f"[ClusterCollector] Starting collectors for {cluster_name}")
+        self.log.info(
+            f"[ClusterCollector] Cluster Fingerprint: {self.get_cluster_fingerprint()}")
         threading.Thread(target=self._metric_loop, daemon=True).start()
         # threading.Thread(target=self._start_log_collectors, daemon=True).start()
 

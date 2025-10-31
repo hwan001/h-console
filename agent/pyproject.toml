@@ -13,6 +13,7 @@ dependencies = [
     "aiohttp",
     "kubernetes",
     "psutil",
+    "python-dotenv>=1.2.1",
 ]
 
 [build-system]
